@@ -1,17 +1,15 @@
 import csv
 import json
-import threading
-import time
-import random
+from abc import ABC, abstractmethod
 from statistics import mean
 
-
-class Agente:
+# Clase base abstracta
+class Agente(ABC):
     def __init__(self, nombre, edad):
         self.nombre = nombre
         self.edad = int(edad)
         self.estado = "activo"
-        self.llamadas = []  # Lista para almacenar las llamadas realizadas por el agente
+        self.llamadas = []
 
     def activar(self):
         self.estado = "activo"
@@ -19,43 +17,6 @@ class Agente:
     def desactivar(self):
         self.estado = "inactivo"
 
-    def __str__(self):
-        return f"Agente(nombre={self.nombre}, edad={self.edad}, estado={self.estado})"
-
-    def __repr__(self):
-        return self.__str__()
-
-    # Leer desde archivo CSV
-    @classmethod
-    def cargar_desde_csv(cls, archivo_csv):
-        agentes = []
-        with open(archivo_csv, newline='', encoding='utf-8') as csvfile:
-            lector = csv.DictReader(csvfile)
-            for fila in lector:
-                agentes.append(cls(fila['nombre'], fila['edad']))
-        return agentes
-
-    # Leer desde archivo TXT (asumimos formato: nombre,edad por línea)
-    @classmethod
-    def cargar_desde_txt(cls, archivo_txt):
-        agentes = []
-        with open(archivo_txt, 'r', encoding='utf-8') as archivo:
-            for linea in archivo:
-                partes = linea.strip().split(',')
-                if len(partes) == 2:
-                    nombre, edad = partes
-                    agentes.append(cls(nombre, edad))
-        return agentes
-
-    # Leer desde archivo JSON (asumimos lista de dicts con nombre y edad)
-    @classmethod
-    def cargar_desde_json(cls, archivo_json):
-        agentes = []
-        with open(archivo_json, 'r', encoding='utf-8') as archivo:
-            datos = json.load(archivo)
-            for item in datos:
-                agentes.append(cls(item['nombre'], item['edad']))
-        return agentes
     def registrar_llamada(self, llamada):
         self.llamadas.append(llamada)
 
@@ -71,5 +32,48 @@ class Agente:
             'promedio_duracion': promedio_duracion
         }
 
+    @classmethod
+    def cargar_desde_csv(cls, archivo_csv):
+        agentes = []
+        with open(archivo_csv, newline='', encoding='utf-8') as csvfile:
+            lector = csv.DictReader(csvfile)
+            for fila in lector:
+                agentes.append(AgenteJunior(fila['nombre'], fila['edad']))
+        return agentes
+
+    @classmethod
+    def cargar_desde_txt(cls, archivo_txt):
+        agentes = []
+        with open(archivo_txt, 'r', encoding='utf-8') as archivo:
+            for linea in archivo:
+                partes = linea.strip().split(',')
+                if len(partes) == 2:
+                    nombre, edad = partes
+                    agentes.append(AgenteJunior(nombre, edad))
+        return agentes
+
+    @classmethod
+    def cargar_desde_json(cls, archivo_json):
+        agentes = []
+        with open(archivo_json, 'r', encoding='utf-8') as archivo:
+            datos = json.load(archivo)
+            for item in datos:
+                agentes.append(AgenteJunior(item['nombre'], item['edad']))
+        return agentes
+
     def __str__(self):
         return f"{self.nombre} ({self.estado})"
+
+    @abstractmethod
+    def obtener_tipo(self):
+        pass
+
+
+class AgenteJunior(Agente):
+    def obtener_tipo(self):
+        return "Junior"
+
+
+class AgenteSenior(Agente):
+    def obtener_tipo(self):
+        return "Senior"

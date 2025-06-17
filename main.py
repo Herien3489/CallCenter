@@ -2,9 +2,20 @@ from services.gestor_agentes import (
     agregar_agente, eliminar_agente, listar_agentes,
     cambiar_estado_agente, mostrar_estadisticas_agente, agentes
 )
+from services.gestor_agentes import (
+    cargar_agentes_desde_csv,
+    agregar_agente,
+    eliminar_agente,
+    listar_agentes,
+    cambiar_estado_agente,
+    mostrar_estadisticas_agente,
+    agentes
+)
 from services.gestor_llamadas import ejecutar_llamadas_concurrentes
-from utils.decoradores import bonificar_agentes
+from utils.decoradores import bonificar_agente
 from models.cliente import Cliente
+from utils.estadisticas import mostrar_graficas_estadisticas
+
 
 # Cargar clientes desde CSV
 clientes = Cliente.cargar_desde_csv("archivos/clientes.csv")
@@ -43,12 +54,14 @@ def menu_agentes():
             print("❌ Opción inválida.")
 
 def menu_principal():
+    cargar_agentes_desde_csv()
     while True:
         print("\n========== MENÚ PRINCIPAL ==========")
         print("1. Gestión de Agentes")
         print("2. Simular llamadas")
         print("3. Bonificar agentes destacados")
-        print("4. Salir")
+        print("4. Ver gráficas de estadísticas")
+        print("5. Salir")
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
@@ -59,8 +72,10 @@ def menu_principal():
                 continue
             ejecutar_llamadas_concurrentes(agentes, clientes)
         elif opcion == "3":
-            bonificar_agentes(agentes)
+            bonificar_agente(agentes)
         elif opcion == "4":
+            mostrar_graficas_estadisticas()
+        elif opcion == "5":
             print("👋 Saliendo del sistema...")
             break
         else:

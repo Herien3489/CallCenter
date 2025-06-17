@@ -4,6 +4,8 @@ import random
 from statistics import mean
 
 class Llamada:
+    _id_counter = 1  # ✅ Define el contador aquí
+
     def __init__(self, agente, duracion, exitosa, observacion=""):
         self.id = Llamada._id_counter
         Llamada._id_counter += 1

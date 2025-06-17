@@ -2,23 +2,20 @@ import csv
 import json
 from abc import ABC, abstractmethod
 from statistics import mean
-
+import os
+RUTA_ESTADISTICAS = "archivos/estadisticas.json"
 # Clase base abstracta
 class Agente(ABC):
+    
     def __init__(self, nombre, edad):
         self.nombre = nombre
         self.edad = int(edad)
         self.estado = "activo"
         self.llamadas = []
 
-    def activar(self):
-        self.estado = "activo"
-
-    def desactivar(self):
-        self.estado = "inactivo"
-
     def registrar_llamada(self, llamada):
         self.llamadas.append(llamada)
+        self._guardar_estadisticas_en_json()
 
     def obtener_estadisticas(self):
         total = len(self.llamadas)
@@ -31,6 +28,27 @@ class Agente(ABC):
             'efectividad': (exitosas / total) * 100 if total > 0 else 0,
             'promedio_duracion': promedio_duracion
         }
+
+    def _guardar_estadisticas_en_json(self):
+        stats = self.obtener_estadisticas()
+
+        # Cargar archivo si existe
+        if os.path.exists(RUTA_ESTADISTICAS):
+            with open(RUTA_ESTADISTICAS, "r", encoding="utf-8") as f:
+                datos = json.load(f)
+        else:
+            datos = {}
+
+        # Actualizar solo las estadísticas de este agente
+        datos[self.nombre] = {
+            "edad": self.edad,
+            "estado": self.estado,
+            "estadisticas": stats
+        }
+
+        # Guardar de nuevo
+        with open(RUTA_ESTADISTICAS, "w", encoding="utf-8") as f:
+            json.dump(datos, f, indent=4)
 
     @classmethod
     def cargar_desde_csv(cls, archivo_csv):

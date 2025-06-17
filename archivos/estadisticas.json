@@ -1,0 +1,13 @@
+{
+    "Luis": {
+        "edad": 30,
+        "estado": "activo",
+        "estadisticas": {
+            "total": 1,
+            "exitosas": 0,
+            "fallidas": 1,
+            "efectividad": 0.0,
+            "promedio_duracion": 7
+        }
+    }
+}

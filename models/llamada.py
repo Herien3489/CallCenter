@@ -1,3 +1,8 @@
+import threading
+import time
+import random
+from statistics import mean
+
 class Llamada:
     def __init__(self, agente, duracion, exitosa, observacion=""):
         self.id = Llamada._id_counter
